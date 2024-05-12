@@ -7,7 +7,7 @@
 	<!-- Packaging for Nuget -->
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<PackageId>MTM.BaldiDevAPI</PackageId>
+	<PackageId>MissingTextureMan.BaldiDevAPI</PackageId>
 	<Title>MissingTextureMan101's Baldi Modding Dev API</Title>
 	<Version>4.1.1.1</Version>
 	<Description>An API primarily for general purpose development for Baldi's Basics Plus mods.</Description>
