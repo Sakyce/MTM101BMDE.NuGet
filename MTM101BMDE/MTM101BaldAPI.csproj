@@ -8,7 +8,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>MissingTextureMan.BaldiDevAPI</PackageId>
     <Title>MissingTextureMan101's Baldi Modding Dev API</Title>
-    <Version>4.1.1.1</Version>
+    <Version>4.2.0.0</Version>
     <Description>An API primarily for general purpose development for Baldi's Basics Plus mods.</Description>
     <Copyright>MIT License</Copyright>
     <PackageProjectUrl>https://gamebanana.com/mods/383711</PackageProjectUrl>
