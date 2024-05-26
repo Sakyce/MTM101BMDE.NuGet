@@ -41,7 +41,12 @@ namespace MTM101BaldAPI
     {
         internal static ManualLogSource Log = new ManualLogSource("BB+ Dev API Pre Initialization");
 
-        public const string VersionNumber = "4.1.1.1";
+        public const string VersionNumber = "4.2.0.0";
+
+        /// <summary>
+        /// The version of the API, applicable when BepInEx cache messes up the version number.
+        /// </summary>
+        public static Version Version => new Version(VersionNumber);
 
         internal static bool CalledInitialize = false;
 
@@ -50,6 +55,8 @@ namespace MTM101BaldAPI
         internal static List<UnityEngine.Object> keepInMemory = new List<UnityEngine.Object>();
 
         internal ConfigEntry<bool> usingMidiFix;
+
+        internal Sprite[] questionMarkSprites;
 
         public static ItemMetaStorage itemMetadata = new ItemMetaStorage();
         public static NPCMetaStorage npcMetadata = new NPCMetaStorage();
@@ -399,6 +406,8 @@ namespace MTM101BaldAPI
             AssetMan.Add<Sprite>("MenuArrowHighlight", allSprites.Where(x => x.name == "MenuArrowSheet_0").First());
             AssetMan.Add<Sprite>("Bar", allSprites.Where(x => x.name == "MenuBarSheet_0").First());
             AssetMan.Add<Sprite>("BarTransparent", allSprites.Where(x => x.name == "MenuBarSheet_1").First());
+            AssetMan.AddFromResources<Shader>();
+            questionMarkSprites = allSprites.Where(x => x.texture.name == "QMarkSheet").ToArray();
             SoundObject[] allSoundObjects = Resources.FindObjectsOfTypeAll<SoundObject>();
             AssetMan.Add<SoundObject>("Xylophone", allSoundObjects.Where(x => x.name == "Xylophone").First());
             AssetMan.Add<SoundObject>("Explosion", allSoundObjects.Where(x => x.name == "Explosion").First());
@@ -427,8 +436,12 @@ namespace MTM101BaldAPI
             }
         }
 
-        // "GUYS IM GONNA USE THIS FOR MY CUSTOM ERROR SCREEN FOR MY FUNNY 4TH WALL BREAK IN MY MOD!"
-        // just dont. please. only use this function for actual errors.
+        /// <summary>
+        /// "GUYS IM GONNA USE THIS FOR MY CUSTOM ERROR SCREEN FOR MY FUNNY 4TH WALL BREAK IN MY MOD!"
+        /// just dont. please. only use this function for actual errors.
+        /// </summary>
+        /// <param name="plug"></param>
+        /// <param name="e"></param>
         public static void CauseCrash(PluginInfo plug, Exception e)
         {
             Canvas template = MTM101BaldiDevAPI.AssetMan.Get<Canvas>("ErrorTemplate");

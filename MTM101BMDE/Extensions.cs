@@ -11,7 +11,13 @@ namespace MTM101BaldAPI
 {
     public static class Extensions
     {
-
+        /// <summary>
+        /// Convert the GameObject into a prefab by moving its transform inside an internal GameObject marked as HideAndDontSave. It is automatically done for NPCs made with NPCBuilders and Items made with ItemBuilder.
+        /// Use this method in AssetsLoaded.
+        /// </summary>
+        /// <param name="me"></param>
+        /// <param name="setActive">If true, then the GameObject will be set to active. The components code won't run anyways.</param>
+        /// <exception cref="NullReferenceException"></exception>
         public static void ConvertToPrefab(this GameObject me, bool setActive)
         {
             if (MTM101BaldiDevAPI.PrefabSubObject == null)
@@ -151,6 +157,12 @@ namespace MTM101BaldAPI.Registers
             return npcMeta;
         }
 
+        /// <summary>
+        /// Converts metadata into a list of the metadata's values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="me"></param>
+        /// <returns></returns>
         public static List<T> ToValues<T>(this List<IMetadata<T>> me)
         {
             List<T> returnL = new List<T>();
@@ -164,6 +176,12 @@ namespace MTM101BaldAPI.Registers
             return returnL;
         }
 
+        /// <summary>
+        /// Converts metadata into an array of the metadata's values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="me"></param>
+        /// <returns></returns>
         public static T[] ToValues<T>(this IMetadata<T>[] me)
         {
             T[] returnL = new T[me.Length];
