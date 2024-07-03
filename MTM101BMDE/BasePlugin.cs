@@ -41,7 +41,7 @@ namespace MTM101BaldAPI
     {
         internal static ManualLogSource Log = new ManualLogSource("BB+ Dev API Pre Initialization");
 
-        public const string VersionNumber = "4.2.0.0";
+        public const string VersionNumber = "4.3.0.0";
 
         /// <summary>
         /// The version of the API, applicable when BepInEx cache messes up the version number.
@@ -151,11 +151,15 @@ namespace MTM101BaldAPI
                         bm.tags.Add("drink");
                         break;
                     case Items.AlarmClock:
+                        x.AddMeta(MTM101BaldiDevAPI.Instance, ItemFlags.Persists | ItemFlags.CreatesEntity).tags.AddRange(new string[] { "technology", "makes_noise" });
+                        break;
                     case Items.ChalkEraser:
                         x.AddMeta(MTM101BaldiDevAPI.Instance, ItemFlags.Persists | ItemFlags.CreatesEntity);
                         break;
                     case Items.Boots:
                     case Items.Teleporter:
+                        x.AddMeta(MTM101BaldiDevAPI.Instance, ItemFlags.Persists).tags.Add("technology");
+                        break;
                     case Items.Nametag:
                         x.AddMeta(MTM101BaldiDevAPI.Instance, ItemFlags.Persists);
                         break;
@@ -175,6 +179,8 @@ namespace MTM101BaldAPI
                     case Items.DetentionKey:
                     case Items.Tape:
                     case Items.Scissors:
+                        x.AddMeta(MTM101BaldiDevAPI.Instance, ItemFlags.None).tags.Add("sharp");
+                        break;
                     case Items.PrincipalWhistle:
                     case Items.DoorLock:
                         x.AddMeta(MTM101BaldiDevAPI.Instance, ItemFlags.None);
@@ -220,7 +226,7 @@ namespace MTM101BaldAPI
             NPCMetaStorage.Instance.Add(new NPCMetadata(MTM101BaldiDevAPI.Instance.Info, NPCs.Where(x => x.Character == Character.Beans).ToArray(), "Beans", NPCFlags.Standard));
             NPCMetaStorage.Instance.Add(new NPCMetadata(MTM101BaldiDevAPI.Instance.Info, NPCs.Where(x => x.Character == Character.Chalkles).ToArray(), "ChalkFace", NPCFlags.StandardNoCollide | NPCFlags.MakeNoise));
             NPCMetaStorage.Instance.Add(new NPCMetadata(MTM101BaldiDevAPI.Instance.Info, NPCs.Where(x => x.Character == Character.Cumulo).ToArray(), "CloudyCopter", NPCFlags.Standard)); // they do have a trigger it just doesn't do anything
-            NPCMetaStorage.Instance.Add(new NPCMetadata(MTM101BaldiDevAPI.Instance.Info, NPCs.Where(x => x.Character == Character.Bully).ToArray(), "Bully", NPCFlags.Standard | NPCFlags.IsBlockade));
+            NPCMetaStorage.Instance.Add(new NPCMetadata(MTM101BaldiDevAPI.Instance.Info, NPCs.Where(x => x.Character == Character.Bully).ToArray(), "Bully", (NPCFlags.Standard | NPCFlags.IsBlockade) & ~NPCFlags.CanMove));
             NPCMetaStorage.Instance.Add(new NPCMetadata(MTM101BaldiDevAPI.Instance.Info, NPCs.Where(x => x.Character == Character.Pomp).ToArray(), "Mrs Pomp", NPCFlags.Standard | NPCFlags.MakeNoise));
             NPCMetaStorage.Instance.Add(new NPCMetadata(MTM101BaldiDevAPI.Instance.Info, NPCs.Where(x => x.Character == Character.Playtime).ToArray(), "Playtime", NPCFlags.Standard));
             NPCMetaStorage.Instance.Add(new NPCMetadata(MTM101BaldiDevAPI.Instance.Info, NPCs.Where(x => x.Character == Character.Crafters).ToArray(), "Arts and Crafters", NPCFlags.Standard | NPCFlags.MakeNoise));
@@ -302,14 +308,7 @@ namespace MTM101BaldAPI
             whiteTexture.SetPixels(pixels.ToArray());
             whiteTexture.Apply();
             Transform transformToTry = null;
-            if (GameObject.Find("NameEntry"))
-            {
-                transformToTry = GameObject.Find("NameEntry").transform;
-            }
-            else
-            {
-                transformToTry = GameObject.Find("Menu").transform;
-            }
+            transformToTry = GameObject.Find(GameObject.Find("NameEntry") ? "NameEntry" : "Menu").transform;
             Image whiteBG = UIHelpers.CreateImage(AssetLoader.SpriteFromTexture2D(whiteTexture, 1f), transformToTry, Vector3.zero, false);
             whiteBG.gameObject.AddComponent<ModLoadingScreenManager>();
         }
@@ -421,13 +420,7 @@ namespace MTM101BaldAPI
             foreach (SceneObject objct in sceneObjects)
             {
                 if (objct.levelObject == null) continue;
-                CustomLevelObject customizedObject = ScriptableObject.CreateInstance<CustomLevelObject>();
-                // transfer the data
-                FieldInfo[] foes = typeof(LevelObject).GetFields();
-                foreach (FieldInfo fo in foes)
-                {
-                    fo.SetValue(customizedObject, fo.GetValue(objct.levelObject));
-                }
+                CustomLevelObject customizedObject = ScriptableObjectHelpers.CloneScriptableObject<LevelObject, CustomLevelObject>(objct.levelObject);
                 customizedObject.name = objct.levelObject.name;
                 Destroy(objct.levelObject);
                 objct.levelObject = customizedObject;
@@ -437,8 +430,7 @@ namespace MTM101BaldAPI
         }
 
         /// <summary>
-        /// "GUYS IM GONNA USE THIS FOR MY CUSTOM ERROR SCREEN FOR MY FUNNY 4TH WALL BREAK IN MY MOD!"
-        /// just dont. please. only use this function for actual errors.
+        /// Please only use this function for actual errors.
         /// </summary>
         /// <param name="plug"></param>
         /// <param name="e"></param>
